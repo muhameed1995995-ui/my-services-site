@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خدمات الشحن والترويج</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      padding: 35px 15px;
+      background: linear-gradient(135deg, #2563eb, #9333ea);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    p {
+      font-size: 18px;
+    }
+
+    .box {
+      background: #1e293b;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .service {
+      background: #334155;
+      margin: 10px;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    input, select, textarea, button {
+      width: 90%;
+      padding: 12px;
+      margin: 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    textarea {
+      height: 90px;
+    }
+
+    button {
+      background: #22c55e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    .pay {
+      background: #0070ba;
+    }
+
+    footer {
+      padding: 20px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>خدمات الشحن والترويج</h1>
+  <p>شحن ألعاب، ترويج تيك توك، مشاهدات، لايكات وتعليقات</p>
+</header>
+
+<div class="box">
+  <h2>الخدمات المتوفرة</h2>
+  <div class="service">شحن PUBG</div>
+  <div class="service">شحن Free Fire</div>
+  <div class="service">مشاهدات TikTok</div>
+  <div class="service">لايكات TikTok</div>
+  <div class="service">تعليقات TikTok</div>
+</div>
+
+<div class="box">
+  <h2>اطلب الآن</h2>
+
+  <input type="text" id="name" placeholder="اكتب اسمك">
+
+  <select id="service">
+    <option>شحن PUBG</option>
+    <option>شحن Free Fire</option>
+    <option>مشاهدات TikTok</option>
+    <option>لايكات TikTok</option>
+    <option>تعليقات TikTok</option>
+  </select>
+
+  <input type="text" id="account" placeholder="ID اللعبة أو رابط الحساب">
+
+  <textarea id="notes" placeholder="ملاحظات الطلب"></textarea>
+
+  <button onclick="sendOrder()">إرسال الطلب</button>
+</div>
+
+<div class="box">
+  <h2>الدفع</h2>
+  <p>بعد إرسال الطلب، سيتم تأكيد السعر والتوفر قبل التنفيذ.</p>
+  <button class="pay" onclick="payNow()">الدفع عبر PayPal</button>
+</div>
+
+<footer>
+  © جميع الحقوق محفوظة
+</footer>
+
+<script>
+function sendOrder() {
+  var name = document.getElementById("name").value;
+  var service = document.getElementById("service").value;
+  var account = document.getElementById("account").value;
+  var notes = document.getElementById("notes").value;
+
+  if (name === "" || account === "") {
+    alert("اكتب الاسم و ID أو رابط الحساب");
+    return;
+  }
+
+  alert(
+    "تم تسجيل الطلب ✅\n\n" +
+    "الاسم: " + name + "\n" +
+    "الخدمة: " + service + "\n" +
+    "الحساب/ID: " + account + "\n" +
+    "ملاحظات: " + notes + "\n\n" +
+    "سيتم مراجعة الطلب قبل التنفيذ."
+  );
+}
+
+function payNow() {
+  alert("ضع رابط PayPal هنا لاحقاً");
+}
+</script>
+
+</body>
+</html>
