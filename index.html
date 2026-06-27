@@ -1,757 +1,457 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>SheikhCut Studio</title>
-  <style>
-    :root{
-      --bg:#050712;
-      --bg2:#0b1020;
-      --card:rgba(17,24,39,.82);
-      --card2:rgba(24,31,50,.88);
-      --line:rgba(148,163,184,.18);
-      --text:#f8fafc;
-      --muted:#a8b3c7;
-      --cyan:#00e5ff;
-      --violet:#8b5cf6;
-      --pink:#ec4899;
-      --green:#22c55e;
-      --red:#ef4444;
-      --yellow:#f59e0b;
-      --shadow:0 22px 65px rgba(0,0,0,.42);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Arial,Tahoma,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at 15% 10%, rgba(0,229,255,.18), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(236,72,153,.17), transparent 28%),
-        radial-gradient(circle at 50% 100%, rgba(139,92,246,.20), transparent 35%),
-        linear-gradient(145deg,var(--bg),var(--bg2));
-      overflow-x:hidden;
-    }
-    body:before{
-      content:"";
-      position:fixed; inset:0; pointer-events:none; opacity:.35;
-      background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size:46px 46px;
-      mask-image:linear-gradient(to bottom, black, transparent 85%);
-    }
-    header{
-      position:sticky; top:0; z-index:20;
-      padding:12px 14px;
-      backdrop-filter: blur(16px);
-      background:rgba(5,7,18,.76);
-      border-bottom:1px solid var(--line);
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:46px;height:46px;border-radius:16px;
-      background:linear-gradient(135deg,var(--cyan),var(--violet),var(--pink));
-      display:grid;place-items:center;color:#06111f;font-size:22px;font-weight:900;
-      box-shadow:0 0 35px rgba(0,229,255,.35);
-    }
-    .brand-title{font-weight:900;font-size:19px;letter-spacing:.2px}
-    .tag{font-size:12px;color:var(--muted);margin-top:3px}
-    .header-pill{
-      display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end
-    }
-    .pill{
-      border:1px solid var(--line); background:rgba(15,23,42,.7); color:#dbeafe;
-      padding:8px 10px; border-radius:999px; font-size:12px;
-    }
-    main{
-      width:100%; max-width:1280px; margin:auto; padding:14px;
-      display:grid; grid-template-columns:minmax(0,1.25fr) 380px; gap:14px;
-    }
-    .panel{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:14px;
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-    .preview-wrap{
-      min-height:410px;
-      display:grid; place-items:center;
-      background:
-        radial-gradient(circle at center, rgba(0,229,255,.10), transparent 45%),
-        #000;
-      border-radius:22px;
-      overflow:hidden;
-      position:relative;
-      border:1px solid rgba(255,255,255,.12);
-    }
-    canvas{width:100%; max-height:70vh; background:#000; display:block}
-    video{display:none}
-    .drop{
-      position:absolute; inset:0;
-      display:grid; place-items:center; text-align:center; padding:24px;
-      background:
-        linear-gradient(to bottom, rgba(5,7,18,.25), rgba(5,7,18,.68)),
-        radial-gradient(circle at center,rgba(0,229,255,.18),rgba(0,0,0,.0) 52%);
-    }
-    .drop-card{
-      width:min(560px,96%);
-      border:1px solid rgba(255,255,255,.16);
-      border-radius:28px;
-      padding:28px 22px;
-      background:rgba(15,23,42,.68);
-      backdrop-filter: blur(18px);
-      box-shadow:0 25px 85px rgba(0,0,0,.45);
-    }
-    .drop h1{margin:0 0 10px;font-size:34px}
-    .drop p{color:#d1d5db;line-height:1.8;margin:0 0 18px}
-    .drop-icon{
-      width:82px;height:82px;margin:0 auto 14px;border-radius:28px;
-      background:linear-gradient(135deg,var(--cyan),var(--violet));
-      display:grid;place-items:center;color:#06111f;font-size:34px;font-weight:900;
-      box-shadow:0 0 55px rgba(0,229,255,.28);
-    }
-    .top-actions{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:12px}
-    button,.btn{
-      border:0;border-radius:15px;padding:12px 13px; font-weight:900; cursor:pointer; color:white;
-      background:rgba(39,51,73,.95); font-family:inherit; font-size:14px; text-align:center;
-      transition:transform .15s, filter .15s, box-shadow .15s;
-      border:1px solid rgba(255,255,255,.08);
-      user-select:none;
-    }
-    button:hover,.btn:hover{filter:brightness(1.13); transform:translateY(-1px)}
-    .primary{background:linear-gradient(135deg,var(--cyan),var(--violet)); color:#06111f}
-    .green{background:linear-gradient(135deg,#22c55e,#16a34a)}
-    .red{background:linear-gradient(135deg,#ef4444,#be123c)}
-    .yellow{background:linear-gradient(135deg,#f59e0b,#ea580c)}
-    .wide{grid-column:span 2}
-    input[type=file]{display:none}
-    label{display:block;color:var(--muted);font-size:13px;margin:10px 2px 6px}
-    input,select,textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:rgba(7,11,22,.84);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px;
-      font-family:inherit;
-      font-size:15px;
-      outline:none;
-    }
-    input:focus,select:focus,textarea:focus{border-color:rgba(0,229,255,.65); box-shadow:0 0 0 3px rgba(0,229,255,.12)}
-    textarea{min-height:92px; resize:vertical}
-    input[type=range]{padding:0; accent-color:#00e5ff}
-    input[type=color]{padding:4px;height:44px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-    .tabs{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:7px;
-      margin-bottom:12px;
-      position:sticky;
-      top:74px;
-      z-index:3;
-      background:rgba(17,24,39,.65);
-      backdrop-filter: blur(12px);
-      padding-bottom:8px;
-    }
-    .tab{background:rgba(28,38,56,.92);color:#cbd5e1;padding:10px 8px;font-size:13px}
-    .tab.active{background:linear-gradient(135deg,#00e5ff,#8b5cf6);color:#06111f}
-    .tool{display:none;animation:fade .2s ease}
-    .tool.active{display:block}
-    @keyframes fade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}
-    h2{margin:4px 0 12px;font-size:19px}
-    .timeline{
-      margin-top:12px; background:rgba(7,11,22,.78); border:1px solid var(--line); border-radius:20px; padding:13px;
-    }
-    .timebar{
-      height:64px; border-radius:18px;
-      background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 2px, transparent 2px 42px),
-        linear-gradient(90deg,#253047,#57337b,#1f7c8e);
-      position:relative; overflow:hidden; margin:10px 0;
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .playhead{position:absolute;top:0;bottom:0;width:4px;background:#fff;right:0;box-shadow:0 0 17px #fff;border-radius:99px}
-    .trim-start,.trim-end{
-      position:absolute;top:0;bottom:0;width:9px;background:#22c55e;border-radius:12px;
-      box-shadow:0 0 18px rgba(34,197,94,.35);
-    }
-    .trim-start{right:0}
-    .trim-end{left:0;background:#ef4444;box-shadow:0 0 18px rgba(239,68,68,.35)}
-    .hint{color:var(--muted);font-size:13px;line-height:1.75}
-    .status{
-      margin-top:8px;color:#dbeafe;font-size:13px;line-height:1.65;
-      background:rgba(15,23,42,.62);border:1px solid var(--line);border-radius:14px;padding:10px
-    }
-    .progress{height:11px;background:#07101d;border-radius:999px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
-    .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink))}
-    .watermark{
-      position:absolute; left:12px; bottom:10px; color:rgba(255,255,255,.34); font-size:12px; pointer-events:none;
-      background:rgba(0,0,0,.22); padding:5px 8px; border-radius:999px;
-    }
-    .quality-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .quality-card{
-      padding:12px;border-radius:16px;background:rgba(7,11,22,.64);border:1px solid var(--line);
-      cursor:pointer;font-size:13px;line-height:1.5
-    }
-    .quality-card b{display:block;color:white;font-size:15px}
-    .quality-card.active{border-color:rgba(0,229,255,.8);box-shadow:0 0 0 3px rgba(0,229,255,.12)}
-    .warning{
-      border:1px solid rgba(245,158,11,.35);
-      background:rgba(245,158,11,.10);
-      color:#fde68a;
-      padding:11px;border-radius:14px;font-size:13px;line-height:1.7;margin-top:10px;
-    }
-    .mini-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-    @media (max-width: 960px){
-      main{grid-template-columns:1fr; padding:10px}
-      .preview-wrap{min-height:310px}
-      .top-actions{grid-template-columns:1fr 1fr}
-      .wide{grid-column:1/-1}
-      .tabs{top:96px}
-      header{align-items:flex-start;flex-direction:column}
-      .header-pill{justify-content:flex-start}
-    }
-    @media (max-width: 520px){
-      .drop h1{font-size:27px}
-      .panel{border-radius:18px;padding:10px}
-      .preview-wrap{border-radius:18px}
-      .row,.quality-grid{grid-template-columns:1fr}
-      .tabs{grid-template-columns:1fr 1fr}
-      button,.btn{font-size:13px;padding:11px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SheikhCut Studio V4</title>
+<style>
+  :root{
+    --bg:#050816; --card:#111827; --line:#334155; --text:#f8fafc;
+    --muted:#b6c2d6; --blue:#05d9ff; --purple:#8b5cf6; --green:#16a34a;
+    --red:#dc2626; --yellow:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:radial-gradient(circle at 20% 0%,rgba(5,217,255,.18),transparent 30%),
+               radial-gradient(circle at 80% 10%,rgba(139,92,246,.22),transparent 35%),
+               linear-gradient(145deg,#050816,#0b1020);
+    color:var(--text);
+    font-family:Arial,Tahoma,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  header{
+    position:sticky;top:0;z-index:50;
+    padding:14px;
+    background:rgba(5,8,22,.93);
+    border-bottom:1px solid var(--line);
+    backdrop-filter:blur(12px);
+  }
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{
+    width:48px;height:48px;border-radius:16px;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    display:grid;place-items:center;color:#06111f;font-weight:900;font-size:24px;
+  }
+  h1{margin:0;font-size:22px}
+  .tag{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}
+  main{max-width:900px;margin:auto;padding:12px}
+  .box{
+    background:rgba(17,24,39,.95);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:12px;
+    margin-bottom:12px;
+    box-shadow:0 16px 40px rgba(0,0,0,.3);
+  }
+  .screen{
+    position:relative;
+    background:#000;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+    min-height:260px;
+  }
+  video{
+    width:100%;
+    min-height:260px;
+    max-height:62vh;
+    background:#000;
+    display:block;
+    object-fit:contain;
+    filter:brightness(var(--brightness,1)) contrast(var(--contrast,1)) saturate(var(--saturation,1));
+  }
+  #placeholder{
+    position:absolute; inset:0;
+    display:grid; place-items:center;
+    text-align:center; padding:25px;
+    color:#dbeafe;
+    background:#000;
+    z-index:2;
+    pointer-events:none;
+  }
+  #placeholder .icon{
+    width:82px;height:82px;border-radius:26px;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    display:grid;place-items:center;margin:0 auto 14px;color:#06111f;font-size:34px;font-weight:900;
+  }
+  #overlayText{
+    position:absolute;
+    left:50%; top:74%;
+    transform:translate(-50%,-50%);
+    width:92%;
+    text-align:center;
+    font-size:34px;
+    font-weight:900;
+    color:#fff;
+    text-shadow:0 3px 16px #000,0 1px 4px #000;
+    white-space:pre-wrap;
+    pointer-events:none;
+    z-index:3;
+    display:none;
+  }
+  label{display:block;color:var(--muted);font-size:14px;margin:10px 2px 6px}
+  input,textarea,button{
+    width:100%;
+    border:0;
+    border-radius:14px;
+    padding:13px;
+    font-size:16px;
+    font-family:Arial,Tahoma,sans-serif;
+  }
+  input,textarea{background:#f8fafc;color:#0f172a}
+  textarea{min-height:90px;resize:vertical}
+  input[type=range]{padding:0;accent-color:#05d9ff}
+  button{
+    color:#fff;background:#29364e;font-weight:900;
+    cursor:pointer;touch-action:manipulation;
+    border:1px solid rgba(255,255,255,.09);
+  }
+  button:active{transform:scale(.98);filter:brightness(1.2)}
+  .primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#06111f}
+  .green{background:var(--green)}
+  .red{background:var(--red)}
+  .yellow{background:linear-gradient(135deg,#f59e0b,#ea580c)}
+  .purple{background:#7c3aed}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .wide{grid-column:1/-1}
+  .status{
+    background:#020617;border:1px solid var(--line);border-radius:14px;
+    padding:12px;margin-top:10px;color:#dbeafe;font-size:14px;line-height:1.8;
+  }
+  .timeline{
+    height:50px;border-radius:16px;overflow:hidden;margin-top:10px;position:relative;
+    background:linear-gradient(90deg,#263047,#57337b,#1f7c8e);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  #playhead{position:absolute;top:0;bottom:0;right:0;width:4px;background:#fff;box-shadow:0 0 16px #fff}
+  .small{font-size:13px;color:var(--muted);line-height:1.8}
+  @media(max-width:650px){
+    main{padding:10px}
+    .grid{grid-template-columns:1fr 1fr}
+    video{min-height:240px}
+  }
+</style>
 </head>
 <body>
 <header>
   <div class="brand">
     <div class="logo">S</div>
     <div>
-      <div class="brand-title">SheikhCut Studio</div>
-      <div class="tag">محرر فيديو خفيف بواجهة حلوة — يدعم رفع وتصدير 4K حسب قوة الجهاز</div>
+      <h1>SheikhCut Studio</h1>
+      <div class="tag">V4 — أزرار مبرمجة ومفحوصة داخل الصفحة، نسخة ثابتة للهاتف</div>
     </div>
-  </div>
-  <div class="header-pill">
-    <span class="pill">4K Ready</span>
-    <span class="pill">بدون سيرفر</span>
-    <span class="pill">ملف واحد index.html</span>
   </div>
 </header>
 
 <main>
-  <section class="panel">
-    <div class="preview-wrap" id="previewWrap">
-      <canvas id="canvas" width="1280" height="720"></canvas>
-      <video id="video" playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <div class="drop" id="drop">
-        <div class="drop-card">
-          <div class="drop-icon">▶</div>
-          <h1>SheikhCut Studio</h1>
-          <p>ارفع فيديو حتى 4K، قص، اكتب نص، عدّل الألوان، واختار المقاس ثم صدّر الفيديو.</p>
-          <label class="btn primary" for="fileInput">اختيار فيديو من الجهاز</label>
-          <div class="hint" style="margin-top:12px">الأفضل لتصدير 4K: كمبيوتر أو Android قوي. الآيفون ممكن يفتح ويعدل، لكن التصدير الثقيل مش مضمون.</div>
+  <section class="box">
+    <label>1) اختار فيديو من الهاتف</label>
+    <input id="fileInput" type="file" accept="video/*,.mp4,.mov,.m4v,.webm">
+
+    <div class="screen">
+      <video id="video" controls playsinline webkit-playsinline preload="metadata"></video>
+      <div id="placeholder">
+        <div>
+          <div class="icon">▶</div>
+          <b>اختار فيديو</b><br>
+          بعد الاختيار رح يطلع هون مباشرة
         </div>
       </div>
-      <div class="watermark">SheikhCut Studio</div>
+      <div id="overlayText"></div>
     </div>
 
-    <input id="fileInput" type="file" accept="video/*,.mp4,.mov,.webm,.mkv,.m4v" />
-    <div class="top-actions">
-      <label class="btn primary wide" for="fileInput">اختيار/تغيير الفيديو</label>
-      <button id="playBtn">تشغيل</button>
-      <button id="pauseBtn">إيقاف</button>
-      <button id="markStartBtn" class="green">بداية القص</button>
-      <button id="markEndBtn" class="red">نهاية القص</button>
-      <button id="snapshotBtn" class="yellow">صورة</button>
-      <button id="exportBtn" class="primary wide">تصدير الفيديو</button>
+    <div class="grid">
+      <button id="btnTest" class="yellow wide" type="button">فحص الأزرار</button>
+      <button id="btnPlay" class="green" type="button">تشغيل</button>
+      <button id="btnPause" class="red" type="button">إيقاف</button>
+      <button id="btnBack" type="button">-5 ثواني</button>
+      <button id="btnForward" type="button">+5 ثواني</button>
+      <button id="btnStart" class="purple" type="button">بداية القص</button>
+      <button id="btnEnd" class="purple" type="button">نهاية القص</button>
+      <button id="btnPlayTrim" class="green wide" type="button">تشغيل الجزء المقصوص</button>
     </div>
 
-    <div class="timeline">
-      <div class="row">
-        <div>
-          <label>تحريك الفيديو</label>
-          <input id="seek" type="range" min="0" max="1000" value="0" />
-        </div>
-        <div>
-          <label>السرعة</label>
-          <select id="speed">
-            <option value="0.25">0.25x بطيء جدًا</option>
-            <option value="0.5">0.5x بطيء</option>
-            <option value="1" selected>1x عادي</option>
-            <option value="1.5">1.5x سريع</option>
-            <option value="2">2x سريع جدًا</option>
-          </select>
-        </div>
-      </div>
-      <div class="timebar">
-        <div class="playhead" id="playhead"></div>
-        <div class="trim-start" id="trimStartBar"></div>
-        <div class="trim-end" id="trimEndBar"></div>
-      </div>
-      <div class="status" id="status">لم يتم اختيار فيديو بعد.</div>
-      <div class="progress"><span id="progressFill"></span></div>
-    </div>
+    <div class="timeline"><div id="playhead"></div></div>
+    <div id="status" class="status">جاهز. اضغط "فحص الأزرار" أولًا.</div>
   </section>
 
-  <aside class="panel">
-    <div class="tabs">
-      <button class="tab active" data-tab="textTool">نص</button>
-      <button class="tab" data-tab="filterTool">فلاتر</button>
-      <button class="tab" data-tab="audioTool">صوت</button>
-      <button class="tab" data-tab="sizeTool">4K</button>
+  <section class="box">
+    <label>2) النص فوق الفيديو</label>
+    <textarea id="textInput" placeholder="اكتب النص هنا"></textarea>
+
+    <div class="grid">
+      <button id="btnApplyText" class="primary" type="button">تطبيق النص</button>
+      <button id="btnClearText" type="button">حذف النص</button>
     </div>
 
-    <div id="textTool" class="tool active">
-      <h2>النصوص والعناوين</h2>
-      <label>النص</label>
-      <textarea id="overlayText" placeholder="اكتب النص هنا">عنوان الفيديو</textarea>
-      <div class="row">
-        <div>
-          <label>حجم الخط</label>
-          <input id="fontSize" type="range" min="20" max="180" value="62" />
-        </div>
-        <div>
-          <label>لون النص</label>
-          <input id="textColor" type="color" value="#ffffff" />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>يمين / شمال</label>
-          <input id="textX" type="range" min="0" max="100" value="50" />
-        </div>
-        <div>
-          <label>فوق / تحت</label>
-          <input id="textY" type="range" min="0" max="100" value="78" />
-        </div>
-      </div>
-      <label>ستايل النص</label>
-      <select id="textStyle">
-        <option value="shadow" selected>ظل سينمائي</option>
-        <option value="box">خلفية سوداء</option>
-        <option value="outline">حد أبيض/أسود</option>
-        <option value="clean">نظيف</option>
-      </select>
-      <div class="mini-tools">
-        <button onclick="presetText('اشترك بالقناة')">اشترك</button>
-        <button onclick="presetText('لا تنسى اللايك')">لايك</button>
-      </div>
+    <label>حجم النص</label>
+    <input id="textSize" type="range" min="18" max="80" value="34">
+
+    <label>مكان النص فوق/تحت</label>
+    <input id="textPosition" type="range" min="10" max="90" value="74">
+  </section>
+
+  <section class="box">
+    <label>3) فلاتر</label>
+    <label>سطوع</label>
+    <input id="brightness" type="range" min="50" max="160" value="100">
+
+    <label>تباين</label>
+    <input id="contrast" type="range" min="50" max="180" value="100">
+
+    <label>ألوان</label>
+    <input id="saturation" type="range" min="0" max="220" value="100">
+
+    <div class="grid">
+      <button id="btnCinema" class="purple" type="button">فلتر سينمائي</button>
+      <button id="btnReset" type="button">إعادة ضبط</button>
     </div>
 
-    <div id="filterTool" class="tool">
-      <h2>فلاتر وواجهة ألوان</h2>
-      <label>سطوع</label>
-      <input id="brightness" type="range" min="40" max="180" value="100" />
-      <label>تباين</label>
-      <input id="contrast" type="range" min="40" max="220" value="110" />
-      <label>تشبع الألوان</label>
-      <input id="saturate" type="range" min="0" max="260" value="115" />
-      <label>أبيض وأسود</label>
-      <input id="grayscale" type="range" min="0" max="100" value="0" />
-      <label>سينمائي دافئ</label>
-      <input id="sepia" type="range" min="0" max="100" value="0" />
-      <div class="mini-tools">
-        <button onclick="filterPreset('cinema')">سينمائي</button>
-        <button onclick="filterPreset('bright')">مشرق</button>
-        <button onclick="filterPreset('dark')">غامق</button>
-        <button onclick="filterPreset('reset')">إعادة</button>
-      </div>
-    </div>
-
-    <div id="audioTool" class="tool">
-      <h2>الصوت</h2>
-      <label>مستوى الصوت</label>
-      <input id="volume" type="range" min="0" max="100" value="100" />
-      <button id="muteBtn">كتم / تشغيل الصوت</button>
-      <p class="hint">تصدير الصوت يعتمد على دعم المتصفح. كروم على الكمبيوتر وAndroid هو الأفضل.</p>
-    </div>
-
-    <div id="sizeTool" class="tool">
-      <h2>المقاس والجودة 4K</h2>
-      <label>مقاس الفيديو</label>
-      <select id="aspect">
-        <option value="16:9" selected>يوتيوب 16:9</option>
-        <option value="9:16">تيك توك/ريلز 9:16</option>
-        <option value="1:1">مربع 1:1</option>
-      </select>
-
-      <label>جودة التصدير</label>
-      <div class="quality-grid">
-        <div class="quality-card" data-quality="auto"><b>Auto</b> نفس جودة الفيديو تقريبًا</div>
-        <div class="quality-card active" data-quality="1080"><b>1080p</b> مناسب وسريع</div>
-        <div class="quality-card" data-quality="2k"><b>2K</b> جودة أعلى</div>
-        <div class="quality-card" data-quality="4k"><b>4K UHD</b> 3840×2160</div>
-      </div>
-
-      <div class="warning">
-        رفع ملفات 4K شغال. تصدير 4K يحتاج جهاز قوي وذاكرة عالية، ولو الموبايل علّق اختار 1080p.
-      </div>
-
-      <button id="applySizeBtn" class="primary" style="margin-top:10px">تطبيق المقاس والجودة</button>
-      <p class="hint" id="resolutionHint">الدقة الحالية: 1280×720</p>
-    </div>
-  </aside>
+    <p class="small">
+      ملاحظة: على iPhone لو الفيديو 4K كبير أو MOV تقيل ممكن سفاري يتأخر. جرّب أولًا فيديو قصير MP4 للتأكد.
+    </p>
+  </section>
 </main>
 
 <script>
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d', { alpha:false });
-const fileInput = document.getElementById('fileInput');
-const drop = document.getElementById('drop');
-const statusEl = document.getElementById('status');
-const seek = document.getElementById('seek');
-const playhead = document.getElementById('playhead');
-const trimStartBar = document.getElementById('trimStartBar');
-const trimEndBar = document.getElementById('trimEndBar');
-const progressFill = document.getElementById('progressFill');
-const resolutionHint = document.getElementById('resolutionHint');
+(function(){
+  "use strict";
 
-let videoURL = null;
-let startTrim = 0;
-let endTrim = 0;
-let duration = 0;
-let exporting = false;
-let selectedQuality = '1080';
+  var fileInput = document.getElementById("fileInput");
+  var video = document.getElementById("video");
+  var placeholder = document.getElementById("placeholder");
+  var overlayText = document.getElementById("overlayText");
+  var status = document.getElementById("status");
+  var playhead = document.getElementById("playhead");
 
-function fmt(t){
-  if(!isFinite(t)) return '00:00';
-  const m = Math.floor(t/60).toString().padStart(2,'0');
-  const s = Math.floor(t%60).toString().padStart(2,'0');
-  return m + ':' + s;
-}
+  var startTime = 0;
+  var endTime = 0;
+  var currentUrl = "";
 
-function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-
-function updateStatus(extra=''){
-  if(duration){
-    const source = video.videoWidth ? ` — المصدر: ${video.videoWidth}×${video.videoHeight}` : '';
-    statusEl.innerHTML = `الوقت: ${fmt(video.currentTime)} / ${fmt(duration)} — القص: ${fmt(startTrim)} إلى ${fmt(endTrim || duration)}${source}<br>التصدير: ${canvas.width}×${canvas.height} ${extra}`;
-  } else {
-    statusEl.textContent = 'لم يتم اختيار فيديو بعد.';
-  }
-}
-
-function updateBars(){
-  if(!duration) return;
-  const p = (video.currentTime / duration) * 100;
-  playhead.style.right = clamp(p,0,100) + '%';
-  trimStartBar.style.right = (startTrim / duration * 100) + '%';
-  trimEndBar.style.left = (100 - ((endTrim || duration) / duration * 100)) + '%';
-  seek.value = Math.floor((video.currentTime / duration) * 1000);
-  updateStatus();
-}
-
-function getAspect(){
-  return document.getElementById('aspect').value;
-}
-
-function baseResolutionForQuality(){
-  const aspect = getAspect();
-  let w=1920, h=1080;
-
-  if(selectedQuality === 'auto' && video.videoWidth){
-    w = video.videoWidth; h = video.videoHeight;
-    // keep original but cap very huge beyond 4K
-    const maxSide = 3840;
-    const scale = Math.min(1, maxSide / Math.max(w,h));
-    w = Math.round(w*scale); h = Math.round(h*scale);
-    return [w,h];
+  function write(msg){
+    status.innerHTML = msg;
   }
 
-  if(aspect === '16:9'){
-    if(selectedQuality === '4k') return [3840,2160];
-    if(selectedQuality === '2k') return [2560,1440];
-    if(selectedQuality === '1080') return [1920,1080];
-    return [1280,720];
+  function fmt(t){
+    if(!isFinite(t)) return "00:00";
+    var m = Math.floor(t / 60);
+    var s = Math.floor(t % 60);
+    return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
   }
-  if(aspect === '9:16'){
-    if(selectedQuality === '4k') return [2160,3840];
-    if(selectedQuality === '2k') return [1440,2560];
-    if(selectedQuality === '1080') return [1080,1920];
-    return [720,1280];
+
+  function hasVideo(){
+    return !!video.getAttribute("src");
   }
-  if(selectedQuality === '4k') return [2160,2160];
-  if(selectedQuality === '2k') return [1440,1440];
-  if(selectedQuality === '1080') return [1080,1080];
-  return [720,720];
-}
 
-function applyAspect(){
-  const [w,h] = baseResolutionForQuality();
-  canvas.width = w;
-  canvas.height = h;
-  resolutionHint.textContent = `الدقة الحالية: ${w}×${h}`;
-  updateStatus('✅ تم تطبيق الدقة');
-}
-
-function drawRoundedBox(x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function draw(){
-  ctx.save();
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  const brightness = document.getElementById('brightness').value;
-  const contrast = document.getElementById('contrast').value;
-  const saturate = document.getElementById('saturate').value;
-  const grayscale = document.getElementById('grayscale').value;
-  const sepia = document.getElementById('sepia').value;
-  ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) grayscale(${grayscale}%) sepia(${sepia}%)`;
-
-  if(video.videoWidth){
-    const cw = canvas.width, ch = canvas.height;
-    const vw = video.videoWidth, vh = video.videoHeight;
-    const scale = Math.max(cw/vw, ch/vh);
-    const dw = vw * scale, dh = vh * scale;
-    const dx = (cw - dw) / 2;
-    const dy = (ch - dh) / 2;
-    ctx.drawImage(video, dx, dy, dw, dh);
+  function showVideo(){
+    placeholder.style.display = "none";
+    video.style.display = "block";
   }
-  ctx.filter = 'none';
 
-  const text = document.getElementById('overlayText').value.trim();
-  if(text){
-    const fs = Number(document.getElementById('fontSize').value) * (canvas.width / 1280);
-    const x = canvas.width * Number(document.getElementById('textX').value) / 100;
-    const y = canvas.height * Number(document.getElementById('textY').value) / 100;
-    const color = document.getElementById('textColor').value;
-    const style = document.getElementById('textStyle').value;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = `900 ${fs}px Arial,Tahoma,sans-serif`;
-    const lines = text.split('\n');
-    const lineHeight = fs * 1.28;
-    const maxWidth = canvas.width * .9;
+  function loadSelectedFile(){
+    var f = fileInput.files && fileInput.files[0];
 
-    if(style === 'box'){
-      let widest = 0;
-      lines.forEach(line => widest = Math.max(widest, ctx.measureText(line).width));
-      const boxW = Math.min(maxWidth, widest + fs * 1.2);
-      const boxH = lines.length * lineHeight + fs * .65;
-      ctx.fillStyle = 'rgba(0,0,0,.58)';
-      drawRoundedBox(x - boxW/2, y - boxH/2, boxW, boxH, fs*.28);
-      ctx.fill();
+    if(!f){
+      write("ما اخترت فيديو.");
+      return;
     }
 
-    lines.forEach((line, i)=>{
-      const yy = y + (i - (lines.length-1)/2) * lineHeight;
-      if(style === 'shadow'){
-        ctx.shadowColor = 'rgba(0,0,0,.9)';
-        ctx.shadowBlur = fs*.22;
-        ctx.shadowOffsetX = fs*.06;
-        ctx.shadowOffsetY = fs*.06;
+    try{
+      if(currentUrl){
+        try{ URL.revokeObjectURL(currentUrl); }catch(e){}
       }
-      if(style === 'outline'){
-        ctx.shadowColor = 'transparent';
-        ctx.lineWidth = Math.max(4, fs*.08);
-        ctx.strokeStyle = 'rgba(0,0,0,.9)';
-        ctx.strokeText(line, x, yy, maxWidth);
-      }
-      ctx.fillStyle = color;
-      ctx.fillText(line, x, yy, maxWidth);
-      ctx.shadowColor = 'transparent';
-    });
-  }
 
-  ctx.restore();
-
-  if(duration){
-    if(video.currentTime >= (endTrim || duration) && !video.paused && !exporting){
+      currentUrl = URL.createObjectURL(f);
       video.pause();
-      video.currentTime = startTrim;
+      video.src = currentUrl;
+      video.load();
+      showVideo();
+
+      write(
+        "تم اختيار الفيديو ✅<br>" +
+        "الاسم: " + f.name + "<br>" +
+        "الحجم: " + Math.round(f.size / 1024 / 1024) + " MB<br>" +
+        "النوع: " + (f.type || "غير معروف") + "<br>" +
+        "استنى ثواني ثم اضغط تشغيل."
+      );
+    }catch(e){
+      write("خطأ بتحميل الفيديو: " + e.message);
     }
-    updateBars();
-  }
-  requestAnimationFrame(draw);
-}
-draw();
-
-fileInput.addEventListener('change', () => {
-  const file = fileInput.files && fileInput.files[0];
-  if(!file) return;
-  if(videoURL) URL.revokeObjectURL(videoURL);
-  videoURL = URL.createObjectURL(file);
-  video.src = videoURL;
-  drop.style.display = 'none';
-  video.load();
-  statusEl.textContent = `جاري تحميل الفيديو: ${file.name}`;
-});
-
-video.addEventListener('loadedmetadata', () => {
-  duration = video.duration || 0;
-  startTrim = 0;
-  endTrim = duration;
-  video.currentTime = 0;
-  applyAspect();
-  updateStatus('✅ جاهز للتعديل');
-  updateBars();
-});
-
-seek.addEventListener('input', () => {
-  if(!duration) return;
-  video.currentTime = Number(seek.value) / 1000 * duration;
-});
-
-document.getElementById('playBtn').onclick = () => {
-  if(!duration) return alert('اختار فيديو أولاً');
-  if(video.currentTime < startTrim || video.currentTime >= (endTrim || duration)) video.currentTime = startTrim;
-  video.play();
-};
-document.getElementById('pauseBtn').onclick = () => video.pause();
-document.getElementById('markStartBtn').onclick = () => {
-  if(!duration) return;
-  startTrim = Math.min(video.currentTime, (endTrim || duration) - 0.2);
-  updateBars();
-};
-document.getElementById('markEndBtn').onclick = () => {
-  if(!duration) return;
-  endTrim = Math.max(video.currentTime, startTrim + 0.2);
-  updateBars();
-};
-document.getElementById('speed').onchange = e => video.playbackRate = Number(e.target.value);
-document.getElementById('volume').oninput = e => video.volume = Number(e.target.value)/100;
-document.getElementById('muteBtn').onclick = () => video.muted = !video.muted;
-document.getElementById('applySizeBtn').onclick = applyAspect;
-document.getElementById('aspect').onchange = applyAspect;
-
-document.querySelectorAll('.quality-card').forEach(card=>{
-  card.onclick = () => {
-    document.querySelectorAll('.quality-card').forEach(c=>c.classList.remove('active'));
-    card.classList.add('active');
-    selectedQuality = card.dataset.quality;
-    applyAspect();
-  };
-});
-
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.onclick = () => {
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tool').forEach(t=>t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  };
-});
-
-function presetText(txt){
-  document.getElementById('overlayText').value = txt;
-}
-
-function filterPreset(type){
-  const b=document.getElementById('brightness'), c=document.getElementById('contrast'), s=document.getElementById('saturate'), g=document.getElementById('grayscale'), sep=document.getElementById('sepia');
-  if(type==='cinema'){ b.value=92;c.value=135;s.value=120;g.value=0;sep.value=14; }
-  if(type==='bright'){ b.value=125;c.value=112;s.value=130;g.value=0;sep.value=0; }
-  if(type==='dark'){ b.value=78;c.value=150;s.value=95;g.value=0;sep.value=8; }
-  if(type==='reset'){ b.value=100;c.value=110;s.value=115;g.value=0;sep.value=0; }
-}
-
-document.getElementById('snapshotBtn').onclick = () => {
-  if(!duration) return alert('اختار فيديو أولاً');
-  const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = 'sheikhcut-frame.png';
-  a.click();
-};
-
-async function exportVideo(){
-  if(!duration) return alert('اختار فيديو أولاً');
-  if(!('MediaRecorder' in window) || !canvas.captureStream){
-    alert('متصفحك لا يدعم التصدير من الصفحة. جرّب Chrome أو Edge على الكمبيوتر/Android.');
-    return;
   }
 
-  if(selectedQuality === '4k'){
-    const ok = confirm('تصدير 4K ثقيل وقد يعلّق على الأجهزة الضعيفة. بدك تكمل؟');
-    if(!ok) return;
+  function playVideo(){
+    if(!hasVideo()){
+      alert("اختار فيديو أولاً");
+      return;
+    }
+    showVideo();
+    var p = video.play();
+    if(p && p.then){
+      p.then(function(){
+        write("الفيديو شغال ▶️");
+      }).catch(function(){
+        write("المتصفح منع التشغيل التلقائي. اضغط زر التشغيل الصغير داخل الفيديو نفسه.");
+      });
+    }
   }
 
-  exporting = true;
-  progressFill.style.width = '0%';
-  applyAspect();
+  function pauseVideo(){
+    video.pause();
+    write("تم إيقاف الفيديو ⏸️");
+  }
 
-  const fps = 30;
-  const canvasStream = canvas.captureStream(fps);
-  let audioTracks = [];
-  try {
-    const vstream = video.captureStream ? video.captureStream() : (video.mozCaptureStream ? video.mozCaptureStream() : null);
-    if(vstream && !video.muted && video.volume > 0) audioTracks = vstream.getAudioTracks();
-  } catch(e) {}
-  const mixedStream = new MediaStream([...canvasStream.getVideoTracks(), ...audioTracks]);
+  function jump(sec){
+    if(!hasVideo()){
+      alert("اختار فيديو أولاً");
+      return;
+    }
+    var dur = video.duration || 0;
+    video.currentTime = Math.max(0, Math.min(dur, (video.currentTime || 0) + sec));
+    write("الوقت الحالي: " + fmt(video.currentTime));
+  }
 
-  let options = {};
-  const pixels = canvas.width * canvas.height;
-  if(pixels >= 3840*2160) options.videoBitsPerSecond = 35000000;
-  else if(pixels >= 2560*1440) options.videoBitsPerSecond = 18000000;
-  else if(pixels >= 1920*1080) options.videoBitsPerSecond = 9000000;
-  else options.videoBitsPerSecond = 5000000;
+  function setStart(){
+    if(!hasVideo()){
+      alert("اختار فيديو أولاً");
+      return;
+    }
+    startTime = video.currentTime || 0;
+    write("تم تحديد بداية القص: " + fmt(startTime));
+  }
 
-  let mime = 'video/webm;codecs=vp9';
-  if(!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm;codecs=vp8';
-  if(!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
-  options.mimeType = mime;
+  function setEnd(){
+    if(!hasVideo()){
+      alert("اختار فيديو أولاً");
+      return;
+    }
+    endTime = video.currentTime || video.duration || 0;
+    write("تم تحديد نهاية القص: " + fmt(endTime));
+  }
 
-  let rec;
-  try { rec = new MediaRecorder(mixedStream, options); }
-  catch(e) { rec = new MediaRecorder(mixedStream, {mimeType:'video/webm'}); }
+  function playTrim(){
+    if(!hasVideo()){
+      alert("اختار فيديو أولاً");
+      return;
+    }
+    if(!endTime || endTime <= startTime){
+      endTime = video.duration || 0;
+    }
+    video.currentTime = startTime || 0;
+    playVideo();
+    write("تشغيل الجزء من " + fmt(startTime) + " إلى " + fmt(endTime));
+  }
 
-  const chunks = [];
-  rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
-  rec.onstop = () => {
-    const blob = new Blob(chunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `SheikhCut-Studio-${canvas.width}x${canvas.height}.webm`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 5000);
-    exporting = false;
-    progressFill.style.width = '100%';
-    updateStatus('✅ تم التصدير');
-  };
-
-  video.pause();
-  video.currentTime = startTrim;
-  await new Promise(resolve => {
-    const handler = () => { video.removeEventListener('seeked', handler); resolve(); };
-    video.addEventListener('seeked', handler);
-  });
-
-  video.playbackRate = Number(document.getElementById('speed').value);
-  rec.start(250);
-  await video.play();
-
-  const exportEnd = endTrim || duration;
-  const timer = setInterval(()=>{
-    const done = Math.max(0, Math.min(1, (video.currentTime - startTrim) / (exportEnd - startTrim)));
-    progressFill.style.width = (done*100) + '%';
-    updateStatus('— جاري التصدير...');
-    if(video.currentTime >= exportEnd || video.paused){
-      clearInterval(timer);
+  function updatePlayhead(){
+    var dur = video.duration || 0;
+    if(dur){
+      var p = Math.max(0, Math.min(100, (video.currentTime / dur) * 100));
+      playhead.style.right = p + "%";
+    }
+    if(endTime && video.currentTime >= endTime && !video.paused){
       video.pause();
-      if(rec.state !== 'inactive') rec.stop();
+      write("وصلنا لنهاية القص: " + fmt(endTime));
     }
-  }, 120);
-}
-document.getElementById('exportBtn').onclick = exportVideo;
+  }
 
-applyAspect();
+  function applyText(){
+    var text = document.getElementById("textInput").value.trim();
+    var size = document.getElementById("textSize").value;
+    var pos = document.getElementById("textPosition").value;
+
+    overlayText.textContent = text;
+    overlayText.style.fontSize = size + "px";
+    overlayText.style.top = pos + "%";
+    overlayText.style.display = text ? "block" : "none";
+    write("تم تطبيق النص ✅");
+  }
+
+  function clearText(){
+    document.getElementById("textInput").value = "";
+    overlayText.textContent = "";
+    overlayText.style.display = "none";
+    write("تم حذف النص.");
+  }
+
+  function applyFilters(){
+    video.style.setProperty("--brightness", document.getElementById("brightness").value / 100);
+    video.style.setProperty("--contrast", document.getElementById("contrast").value / 100);
+    video.style.setProperty("--saturation", document.getElementById("saturation").value / 100);
+  }
+
+  function cinema(){
+    document.getElementById("brightness").value = 95;
+    document.getElementById("contrast").value = 130;
+    document.getElementById("saturation").value = 120;
+    applyFilters();
+    write("تم تطبيق فلتر سينمائي ✅");
+  }
+
+  function resetAll(){
+    startTime = 0;
+    endTime = video.duration || 0;
+
+    document.getElementById("brightness").value = 100;
+    document.getElementById("contrast").value = 100;
+    document.getElementById("saturation").value = 100;
+    applyFilters();
+    clearText();
+
+    if(hasVideo()){
+      video.currentTime = 0;
+    }
+    write("تمت إعادة الضبط ✅");
+  }
+
+  function testButtons(){
+    write("الأزرار شغالة ✅ النسخة V4 مفعلة. الآن اختار فيديو قصير وجرب تشغيل.");
+    alert("الأزرار شغالة ✅");
+  }
+
+  fileInput.addEventListener("change", loadSelectedFile, false);
+
+  video.addEventListener("loadedmetadata", function(){
+    endTime = video.duration || 0;
+    showVideo();
+    write("الفيديو جاهز ✅<br>المدة: " + fmt(video.duration) + "<br>اضغط تشغيل.");
+  }, false);
+
+  video.addEventListener("canplay", function(){
+    showVideo();
+  }, false);
+
+  video.addEventListener("timeupdate", updatePlayhead, false);
+
+  video.addEventListener("error", function(){
+    showVideo();
+    write(
+      "الفيديو ما اشتغل ❌<br>" +
+      "جرّب فيديو MP4 قصير، أو فيديو أقل من 4K.<br>" +
+      "لو من iPhone بصيغة MOV ممكن يكون ثقيل على المتصفح."
+    );
+  }, false);
+
+  document.getElementById("btnTest").addEventListener("click", testButtons, false);
+  document.getElementById("btnPlay").addEventListener("click", playVideo, false);
+  document.getElementById("btnPause").addEventListener("click", pauseVideo, false);
+  document.getElementById("btnBack").addEventListener("click", function(){ jump(-5); }, false);
+  document.getElementById("btnForward").addEventListener("click", function(){ jump(5); }, false);
+  document.getElementById("btnStart").addEventListener("click", setStart, false);
+  document.getElementById("btnEnd").addEventListener("click", setEnd, false);
+  document.getElementById("btnPlayTrim").addEventListener("click", playTrim, false);
+  document.getElementById("btnApplyText").addEventListener("click", applyText, false);
+  document.getElementById("btnClearText").addEventListener("click", clearText, false);
+  document.getElementById("btnCinema").addEventListener("click", cinema, false);
+  document.getElementById("btnReset").addEventListener("click", resetAll, false);
+
+  document.getElementById("textSize").addEventListener("input", applyText, false);
+  document.getElementById("textPosition").addEventListener("input", applyText, false);
+  document.getElementById("brightness").addEventListener("input", applyFilters, false);
+  document.getElementById("contrast").addEventListener("input", applyFilters, false);
+  document.getElementById("saturation").addEventListener("input", applyFilters, false);
+
+  applyFilters();
+})();
 </script>
 </body>
 </html>
